@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+    web:
+        build: ./web
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./src:/code
+        ports:
+            - '8000:8000'
+        depends_on:
+            - db
+        # 後ろ3つの引数をのPOSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DBに設定
+        entrypoint: sh /wait_launch_psql.sh db root root myapp
+    db:
+        image: postgres:10.3
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: myapp # アプリ名を設定
+          TZ: Japan
+        ports:
+          - 5432:5432
+        tty: true
+        restart: always
+        user: root
+        volumes:
+            - ./db/init:/docker-entrypoint-initdb.d
+            - ./db/data:/var/lib/postgresql/data

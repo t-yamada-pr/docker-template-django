@@ -1,0 +1,10 @@
+FROM python:3.7
+ENV PYTHONUNBUFFERED 1
+ADD wait_launch_psql.sh /
+RUN apt-get update
+RUN apt-get -y install postgresql
+RUN mkdir /code
+WORKDIR /code
+ADD requirements.txt /code/
+RUN pip install -r requirements.txt
+ADD . /code/
